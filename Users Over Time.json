@@ -1,0 +1,57 @@
+{
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workbookDisplayName": {
+      "type": "string",
+      "defaultValue": "Users Over Time",
+      "metadata": {
+        "description": "The friendly name for the workbook that is used in the Gallery or Saved List.  This name must be unique within a resource group."
+      }
+    },
+    "workbookType": {
+      "type": "string",
+      "defaultValue": "workbook",
+      "metadata": {
+        "description": "The gallery that the workbook will been shown under. Supported values include workbook, tsg, etc. Usually, this is 'workbook'"
+      }
+    },
+    "workbookSourceId": {
+      "type": "string",
+      "defaultValue": "/subscriptions/817b2770-fa9f-454f-8454-81eb3110991b/resourcegroups/wvd-prod-monitor-eus1-rg/providers/microsoft.operationalinsights/workspaces/wvd-prod-eus1-bmuzq6hj6ftum",
+      "metadata": {
+        "description": "The id of resource instance to which the workbook will be associated"
+      }
+    },
+    "workbookId": {
+      "type": "string",
+      "defaultValue": "[newGuid()]",
+      "metadata": {
+        "description": "The unique guid for this workbook instance"
+      }
+    }
+  },
+  "resources": [
+    {
+      "name": "[parameters('workbookId')]",
+      "type": "microsoft.insights/workbooks",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2018-06-17-preview",
+      "dependsOn": [],
+      "kind": "shared",
+      "properties": {
+        "displayName": "[parameters('workbookDisplayName')]",
+        "serializedData": "{\"version\":\"Notebook/1.0\",\"items\":[{\"type\":1,\"content\":{\"json\":\"## Count of Users over time\\n---\\n\\nThis graphs counts the # of user sessions over time. \"},\"name\":\"text - 2\"},{\"type\":3,\"content\":{\"version\":\"KqlItem/1.0\",\"query\":\"ITPC_CTX_Session_CL\\n| where ConnectionState_s ==\\\"Active\\\"\\n| summarize dcount(SessionHash_s)  by bin(TimeGenerated, 15m)   // bin gives you the count of the distinct sessions in intervals of 15 minutes \\n| render timechart  \\n\",\"size\":1,\"aggregation\":5,\"queryType\":0,\"resourceType\":\"microsoft.operationalinsights/workspaces\",\"chartSettings\":{\"seriesLabelSettings\":[{\"seriesName\":\"dcount_SessionHash_s\",\"label\":\"User Count\"}]}},\"name\":\"query - 2\"},{\"type\":12,\"content\":{\"version\":\"NotebookGroup/1.0\",\"groupType\":\"editable\",\"items\":[{\"type\":1,\"content\":{\"json\":\"## User Count Every 15 Minutes\"},\"name\":\"text - 0\"}]},\"name\":\"group - 2\"},{\"type\":3,\"content\":{\"version\":\"KqlItem/1.0\",\"query\":\"ITPC_CTX_Session_CL\\r\\n| where ConnectionState_s ==\\\"Active\\\"\\r\\n| summarize dcount(SessionHash_s)  by bin(TimeGenerated, 15m)   // bin gives you the count of the distinct sessions in intervals of 15 minutes \\r\\n\",\"size\":3,\"queryType\":0,\"resourceType\":\"microsoft.operationalinsights/workspaces\",\"gridSettings\":{\"sortBy\":[{\"itemKey\":\"TimeGenerated\",\"sortOrder\":2}],\"labelSettings\":[{\"columnId\":\"TimeGenerated\"},{\"columnId\":\"dcount_SessionHash_s\",\"label\":\"User Count\"}]},\"sortBy\":[{\"itemKey\":\"TimeGenerated\",\"sortOrder\":2}]},\"name\":\"query - 3\"}],\"isLocked\":false}",
+        "version": "1.0",
+        "sourceId": "[parameters('workbookSourceId')]",
+        "category": "[parameters('workbookType')]"
+      }
+    }
+  ],
+  "outputs": {
+    "workbookId": {
+      "type": "string",
+      "value": "[resourceId( 'microsoft.insights/workbooks', parameters('workbookId'))]"
+    }
+  },
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#"
+}
